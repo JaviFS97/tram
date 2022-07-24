@@ -213,6 +213,19 @@ def analyze(request, pk):
     }
     return render(request, "analyze.html", context)
 
+@login_required
+def summary(request, pk):
+    report = Report.objects.get(id=pk)
+    # techniques = AttackObject.objects.all().order_by("attack_id")
+    # techniques_serializer = serializers.AttackObjectSerializer(techniques, many=True)
+
+    context = {
+        "report_id": report.id,
+        "report_name": report.name,
+    }
+
+    return render(request, "summary.html", context)
+
 
 @login_required
 def download_document(request, doc_id):

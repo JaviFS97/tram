@@ -38,6 +38,7 @@ router.register(r"sentences", views.SentenceViewSet)
 urlpatterns = [
     path("", views.index),
     path("analyze/<int:pk>/", views.analyze),
+    path("summary/<int:pk>/", views.summary),
     path("api/", include(router.urls)),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
