@@ -93,6 +93,60 @@ class ReportMappingViewSet(viewsets.ModelViewSet):
         return response
 
 
+class ReportATTCKNavigatorViewSet(viewsets.ModelViewSet):
+    """
+    This viewset provides access to ATTCK mappings.
+    """
+
+    def get_queryset(self):
+        """
+        Override parent implementation to support lookup by document ID.
+        """
+        queryset = Report.objects.all()
+        document_id = self.request.query_params.get("doc-id", None)
+        if document_id:
+            queryset = queryset.filter(document__id=document_id)
+
+        return queryset
+
+    def retrieve(self, request, pk=None):
+        """
+        Get the mappings for a report in a format suitable for importing into the attck matrix.
+
+        Overrides the parent implementation to add a Content-Disposition header
+        so that the browser will download instead of displaying inline.
+
+        :param request: HTTP request
+        :param pk: primary key of a report
+        """
+        report = self.get_object()
+        mappings = Mapping.objects.filter(report=report.id)
+        filename = "{}.{}".format(
+            quote(report.name, safe=""), request.accepted_renderer.format
+        )
+
+        response_format = {
+            "name": report.name,
+            "version": "4.3",
+            "description": "All techniques used by " + report.name,
+            "domain": "mitre-enterprise",
+        }
+
+        mappingList = []
+        for m in mappings:
+            x = {
+                "techniqueID": m.attack_object.attack_id,
+                "comment": "Confidence: " + m.confidence,
+                "color": "#6610f2",
+            }
+            mappingList.append(x)
+
+        response_format["techniques"] = mappingList
+        response = Response(response_format)
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return response
+
+
 class SentenceViewSet(viewsets.ModelViewSet):
     queryset = Sentence.objects.all()
     serializer_class = serializers.SentenceSerializer
@@ -213,15 +267,24 @@ def analyze(request, pk):
     }
     return render(request, "analyze.html", context)
 
+
 @login_required
 def summary(request, pk):
     report = Report.objects.get(id=pk)
     # techniques = AttackObject.objects.all().order_by("attack_id")
     # techniques_serializer = serializers.AttackObjectSerializer(techniques, many=True)
 
+    # mappings = Mapping.objects.filter(report= report.id)
+    # print("INFO PYTHON MAPPINGS")
+    # for m in mappings:
+    #     print(m.sentence)
+    #     print(m.attack_object)
+    #     print("\n\n")
+
     context = {
         "report_id": report.id,
         "report_name": report.name,
+        ## [TODO] Calculate the most similar groups
     }
 
     return render(request, "summary.html", context)

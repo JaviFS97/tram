@@ -33,6 +33,9 @@ router.register(
     r"report-mappings", views.ReportMappingViewSet, basename="report-mapping"
 )
 router.register(r"sentences", views.SentenceViewSet)
+router.register(
+    r"attck-mappings", views.ReportATTCKNavigatorViewSet, basename="attck-mapping"
+)
 
 
 urlpatterns = [

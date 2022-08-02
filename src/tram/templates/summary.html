@@ -5,10 +5,11 @@
 {% block title %}TRAM - Analyze Report{% endblock %}
 
 {% block head %}
-<script src="{% static 'js/analyze.js' %}"></script>
+<script src="{% static 'js/summary.js' %}"></script>
 <script type="text/javascript">
     const REPORT_ID = parseInt({{ report_id }});
 </script>
+
 {% endblock %}
 
 {% block back-to-index-link %}
@@ -19,45 +20,127 @@
 
 <h3 class="display-4 text-center">{{ report_name }}</h3>
 
-<div class="accordion" id="accordionExample">
+<div class="accordion" id="accordionPanelsStayOpenExample">
     <div class="accordion-item">
-      <h2 class="accordion-header" id="headingOne">
-        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          Accordion Item #1
-        </button>
-      </h2>
-      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-        <div class="accordion-body">
-          <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+        <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                aria-expanded="true" aria-controls="collapseOne">
+                Accordion Item #1
+            </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+
+            </div>
         </div>
-      </div>
     </div>
     <div class="accordion-item">
-      <h2 class="accordion-header" id="headingTwo">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Accordion Item #2
-        </button>
-      </h2>
-      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-        <div class="accordion-body">
-          <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+        <h2 class="accordion-header" id="headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Accordion Item #2
+            </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+
+                <!-- <div class="row">
+                    <div class="col-2">
+                        <div class="list-group" id="list-tab" role="tablist">
+                            <a class="list-group-item list-group-item-action active" id="list-home-list"
+                                data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">Home</a>
+                            <a class="list-group-item list-group-item-action" id="list-profile-list"
+                                data-bs-toggle="list" href="#list-profile" role="tab"
+                                aria-controls="list-profile">Profile</a>
+                            <a class="list-group-item list-group-item-action" id="list-messages-list"
+                                data-bs-toggle="list" href="#list-messages" role="tab"
+                                aria-controls="list-messages">Messages</a>
+                            <a class="list-group-item list-group-item-action" id="list-settings-list"
+                                data-bs-toggle="list" href="#list-settings" role="tab"
+                                aria-controls="list-settings">Settings</a>
+                        </div>
+                    </div>
+                    <div class="col-10">
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="list-home" role="tabpanel"
+                                aria-labelledby="list-home-list">
+
+                            </div>
+                            <div class="tab-pane fade" id="list-profile" role="tabpanel"
+                                aria-labelledby="list-profile-list">
+
+                            </div>
+                            <div class="tab-pane fade" id="list-messages" role="tabpanel"
+                                aria-labelledby="list-messages-list">...</div>
+                            <div class="tab-pane fade" id="list-settings" role="tabpanel"
+                                aria-labelledby="list-settings-list">...</div>
+                        </div>
+                    </div>
+                </div> -->
+
+            </div>
         </div>
-      </div>
     </div>
     <div class="accordion-item">
-      <h2 class="accordion-header" id="headingThree">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-          Accordion Item #3
-        </button>
-      </h2>
-      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-        <div class="accordion-body">
-          <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-          <iframe src="https://mitre-attack.github.io/attack-navigator/enterprise/#layerURL=https%3A%2F%2Fraw.githubusercontent.com%2Fmitre%2Fattack-navigator%2Fmaster%2Flayers%2Fdata%2Fsamples%2FBear_APT.json&tabs=false&selecting_techniques=false" width="1000" height="500"></iframe>
+        <h2 class="accordion-header" id="headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                Display the predictions in ATT&CK matrix
+            </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <strong>In this section we have enabled the option to visualize the predicted techniques during the
+                    analysis phase. </strong> To display them in the matrix, follow the steps below:
+
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col-2"></div>
+
+                        <div class="col">
+                            <p style="margin-top: 1rem;">1. Download predictions file. You will obtain a file of the techniques predicted during the
+                                analysis. </p>
+                            <a href="/api/attck-mappings/{{ report_id }}?format=json" class="btn btn-primary" style="background-color: #6241C5;">
+                                Dowload
+                            </a>
+                            <p style="margin-top: 1rem;">2. Display the matrix. Clicking on "Display ATT&CK Matrix" button.</p>
+                            <p style="margin-top: 1rem;">3. Select "Open Existing Layer" and choose the option "Upload from local".</p>
+                            <p style="margin-top: 1rem;">4. A file explorer will appear. Browse for the file downloaded during step 1 and select it.</p>
+
+                        </div>
+
+                        <div class="col-2"></div>
+                    </div>
+                </div>
+
+                <p>
+                    <button id="matrix-button" onclick="changeLabel(this.id)" class="btn btn-primary" style="background-color: #6241C5;" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample" >Display ATT&CK Matrix</button>
+                </p>
+                <div style="min-height: 120px;">
+                    <div class="collapse collapse-horizontal" id="collapseWidthExample">
+                        <div class="card card-body"">
+                                <iframe src=" https://mitre-attack.github.io/attack-navigator/enterprise/" width="auto"
+                            height="700"></iframe>
+                            <!-- Mitre ATTCK navigator allows you to send the file information through an option called "LayerURL". It cannot be used because CORS is enabled. -->
+                            <!-- <iframe src="https://mitre-attack.github.io/attack-navigator/enterprise/#layerURL=https%3A%2F%2Fraw.githubusercontent.com%2Fmitre%2Fattack-navigator%2Fmaster%2Flayers%2Fdata%2Fsamples%2FBear_APT.json&tabs=false&selecting_techniques=false"></iframe> -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+
         </div>
-      </div>
     </div>
-  </div>
+</div>
+</div>
 
 
 
