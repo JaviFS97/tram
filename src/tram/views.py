@@ -136,7 +136,7 @@ class ReportATTCKNavigatorViewSet(viewsets.ModelViewSet):
         for m in mappings:
             x = {
                 "techniqueID": m.attack_object.attack_id,
-                "comment": "Confidence: " + m.confidence,
+                "comment": "Confidence: " + str("{:.2f}".format(m.confidence)),
                 "color": "#6610f2",
             }
             mappingList.append(x)
