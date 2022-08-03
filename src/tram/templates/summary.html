@@ -46,6 +46,146 @@
             data-bs-parent="#accordionExample">
             <div class="accordion-body">
 
+
+                <div class="album py-5 bg-light">
+                    <div class="container">
+
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                            <div class="col" style="margin-top: 60px;">
+                                <div class="card shadow-sm">
+
+                                    <div class="card-body">
+                                        <h4 class="card-title">2nd</h4>
+                                        <h5 class="card-subtitle mb-2 text-muted">{{ top2_group.name }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">Aliases: {{ top2_group.aliases }}</h6>
+
+                                        <p class="card-text">
+                                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                  <button class="nav-link active" id="description-tab-1" data-bs-toggle="tab" data-bs-target="#description-tab-pane-1" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Descripcion</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                  <button class="nav-link" id="goals-tab-1" data-bs-toggle="tab" data-bs-target="#goals-tab-pane-1" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Goals</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="information-tab-1" data-bs-toggle="tab" data-bs-target="#information-tab-pane-1" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">General info</button>
+                                                </li>
+                                              </ul>
+                                              <div class="tab-content" id="myTabContent">
+                                                <div class="tab-pane fade show active" id="description-tab-pane-1" role="tabpanel" aria-labelledby="description-tab-1" tabindex="0" style="padding-top: 10px;">{{ top2_group.description }}</div>
+                                                <div class="tab-pane fade" id="goals-tab-pane-1" role="tabpanel" aria-labelledby="goals-tab-1" tabindex="0" style="padding-top: 10px;">{% if top2.group.goal %} {{top2.group.goal}} {% else %} Empty {% endif%}</div>
+                                                <div class="tab-pane fade" id="information-tab-pane-1" role="tabpanel" aria-labelledby="information-tab-1" tabindex="0" style="padding-top: 10px;">
+                                                    <ul class="list-group list-group-flush">
+                                                        <li class="list-group-item">ID: {{ top2_group.id }} </li>
+                                                        <li class="list-group-item">Type: {{ top2_group.type }} </li>
+                                                        <li class="list-group-item">Created: {{ top2_group.created }} </li>
+                                                        <li class="list-group-item">Created by: {{ top2_group.created_by_ref }} </li>
+                                                        <li class="list-group-item">Mitre domains: {{ top2_group.x_mitre_domains }} </li>
+                                                        <li class="list-group-item">Mitre version: {{ top2_group.x_mitre_version }} </li>
+                                                        <li class="list-group-item">Contributors: {% for contributor in top2_group.x_mitre_contributors %} {{ contributor }} {% endfor %}  </li>
+                                                    </ul>
+                                                </div>
+                                              </div>
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                        </div>
+                                    </div>
+                                    <div class="card-footer text-muted">
+                                        Last modified: {{ top2_group.modified}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <h4 class="card-title">1st</h4>
+                                        <h5 class="card-subtitle mb-2 text-muted">{{ top1_group.name }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">Aliases: {{ top1_group.aliases }}</h6>
+
+                                        <p class="card-text">
+                                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                  <button class="nav-link active" id="description-tab-2" data-bs-toggle="tab" data-bs-target="#description-tab-pane-2" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Descripcion</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                  <button class="nav-link" id="goals-tab-2" data-bs-toggle="tab" data-bs-target="#goals-tab-pane-2" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Goals</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="information-tab-2" data-bs-toggle="tab" data-bs-target="#information-tab-pane-2" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">General info</button>
+                                                </li>
+                                              </ul>
+                                              <div class="tab-content" id="myTabContent">
+                                                <div class="tab-pane fade show active" id="description-tab-pane-2" role="tabpanel" aria-labelledby="description-tab-2" tabindex="0" style="padding-top: 10px;">{{ top1_group.description }}</div>
+                                                <div class="tab-pane fade" id="goals-tab-pane-2" role="tabpanel" aria-labelledby="goals-tab-2" tabindex="0" style="padding-top: 10px;">{% if top1.group.goal %} {{top1.group.goal}} {% else %} Empty {% endif%}</div>
+                                                <div class="tab-pane fade" id="information-tab-pane-2" role="tabpanel" aria-labelledby="information-tab-2" tabindex="0" style="padding-top: 10px;">
+                                                    <ul class="list-group list-group-flush">
+                                                        <li class="list-group-item">ID: {{ top1_group.id }} </li>
+                                                        <li class="list-group-item">Type: {{ top1_group.type }} </li>
+                                                        <li class="list-group-item">Created: {{ top1_group.created }} </li>
+                                                        <li class="list-group-item">Created by: {{ top1_group.created_by_ref }} </li>
+                                                        <li class="list-group-item">Mitre domains: {{ top1_group.x_mitre_domains }} </li>
+                                                        <li class="list-group-item">Mitre version: {{ top1_group.x_mitre_version }} </li>
+                                                        <li class="list-group-item">Contributors: {% for contributor in top1_group.x_mitre_contributors %} {{ contributor }} {% endfor %} </li>
+                                                    </ul>
+                                                </div>
+                                              </div>
+                                        </p>
+                                    </div>
+                                    <div class="card-footer text-muted">
+                                        Last modified: {{ top1_group.modified}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col" style="margin-top: 100px;">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <h4 class="card-title">3rd</h4>
+                                        <h5 class="card-subtitle mb-2 text-muted">{{ top3_group.name }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">Aliases: {{ top3_group.aliases }}</h6>
+
+                                        <p class="card-text">
+                                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                  <button class="nav-link active" id="description-tab-3" data-bs-toggle="tab" data-bs-target="#description-tab-pane-3" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Descripcion</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                  <button class="nav-link" id="goals-tab-3" data-bs-toggle="tab" data-bs-target="#goals-tab-pane-3" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Goals</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="information-tab-3" data-bs-toggle="tab" data-bs-target="#information-tab-pane-3" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">General info</button>
+                                                </li>
+                                              </ul>
+                                              <div class="tab-content" id="myTabContent">
+                                                <div class="tab-pane fade show active" id="description-tab-pane-3" role="tabpanel" aria-labelledby="description-tab-3" tabindex="0" style="padding-top: 10px;">{{ top3_group.description }}</div>
+                                                <div class="tab-pane fade" id="goals-tab-pane-3" role="tabpanel" aria-labelledby="goals-tab-3" tabindex="0" style="padding-top: 10px;"> {% if top3.group.goal %} {{top3.group.goal}} {% else %} Empty {% endif%}</div>
+                                                <div class="tab-pane fade" id="information-tab-pane-3" role="tabpanel" aria-labelledby="information-tab-3" tabindex="0" style="padding-top: 10px;">
+                                                    <ul class="list-group list-group-flush">
+                                                        <li class="list-group-item">ID: {{ top3_group.id }} </li>
+                                                        <li class="list-group-item">Type: {{ top3_group.type }} </li>
+                                                        <li class="list-group-item">Created: {{ top3_group.created }} </li>
+                                                        <li class="list-group-item">Created by: {{ top3_group.created_by_ref }} </li>
+                                                        <li class="list-group-item">Mitre domains: {{ top3_group.x_mitre_domains }} </li>
+                                                        <li class="list-group-item">Mitre version: {{ top3_group.x_mitre_version }} </li>
+                                                        <li class="list-group-item">Contributors: {% for contributor in top3_group.x_mitre_contributors %} {{ contributor }} {% endfor %}  </li>
+                                                    </ul>
+                                                </div>
+                                              </div>
+                                        </p>
+                                    </div>
+                                    <div class="card-footer text-muted">
+                                        Last modified: {{ top3_group.modified}}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
                 <!-- <div class="row">
                     <div class="col-2">
                         <div class="list-group" id="list-tab" role="tablist">
@@ -101,14 +241,19 @@
                         <div class="col-2"></div>
 
                         <div class="col">
-                            <p style="margin-top: 1rem;">1. Download predictions file. You will obtain a file of the techniques predicted during the
+                            <p style="margin-top: 1rem;">1. Download predictions file. You will obtain a file of the
+                                techniques predicted during the
                                 analysis. </p>
-                            <a href="/api/attck-mappings/{{ report_id }}?format=json" class="btn btn-primary" style="background-color: #6241C5;">
+                            <a href="/api/attck-mappings/{{ report_id }}?format=json" class="btn btn-primary"
+                                style="background-color: #6241C5;">
                                 Dowload
                             </a>
-                            <p style="margin-top: 1rem;">2. Display the matrix. Clicking on "Display ATT&CK Matrix" button.</p>
-                            <p style="margin-top: 1rem;">3. Select "Open Existing Layer" and choose the option "Upload from local".</p>
-                            <p style="margin-top: 1rem;">4. A file explorer will appear. Browse for the file downloaded during step 1 and select it.</p>
+                            <p style="margin-top: 1rem;">2. Display the matrix. Clicking on "Display ATT&CK Matrix"
+                                button.</p>
+                            <p style="margin-top: 1rem;">3. Select "Open Existing Layer" and choose the option "Upload
+                                from local".</p>
+                            <p style="margin-top: 1rem;">4. A file explorer will appear. Browse for the file downloaded
+                                during step 1 and select it.</p>
 
                         </div>
 
@@ -117,8 +262,10 @@
                 </div>
 
                 <p>
-                    <button id="matrix-button" onclick="changeLabel(this.id)" class="btn btn-primary" style="background-color: #6241C5;" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample" >Display ATT&CK Matrix</button>
+                    <button id="matrix-button" onclick="changeLabel(this.id)" class="btn btn-primary"
+                        style="background-color: #6241C5;" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseWidthExample" aria-expanded="false"
+                        aria-controls="collapseWidthExample">Display ATT&CK Matrix</button>
                 </p>
                 <div style="min-height: 120px;">
                     <div class="collapse collapse-horizontal" id="collapseWidthExample">
