@@ -39,13 +39,20 @@
         <h2 class="accordion-header" id="headingTwo">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                 data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                Accordion Item #2
+                Top 3 most likely groups or intrusion sets
             </button>
         </h2>
         <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
             data-bs-parent="#accordionExample">
             <div class="accordion-body">
 
+                <b> All this information is consulted at {{ TAXII_server_info.title }}</b>.
+                {{ TAXII_server_info.description }}
+                You can contact with them on {{ TAXII_server_info.contact }}.
+
+                <div >
+                    <canvas id="myChart" style="max-height: 200px;"></canvas>
+                  </div>
 
                 <div class="album py-5 bg-light">
                     <div class="container">
@@ -289,7 +296,75 @@
 </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script>
+
+    // [TODO] for testing
+    var reportTTPs = {{ report_TTPs|safe }}
+    const labels = reportTTPs;
+    console.log(reportTTPs)
+    console.log({{ top1_grooup_TTPs_matched_0or1|safe}})
+    console.log({{ top2_grooup_TTPs_matched_0or1|safe}})
+    console.log({{ top3_grooup_TTPs_matched_0or1|safe}})
+
+    const data = {
+        labels: {{ report_TTPs|safe }},
+        datasets: [
+            {
+                label: '1st: {{ top1_group.name }}',
+                backgroundColor: 'rgb(255, 0, 0, .3)',
+                borderColor: 'rgb(255, 0, 0)',
+                data: {{ top1_grooup_TTPs_matched_0or1|safe}} ,
+            },
+            {
+                label: '2nd: {{ top2_group.name }}',
+                backgroundColor: 'rgb(0, 255, 0, .3)',
+                borderColor: 'rgb(0, 255, 0)',
+                data: {{ top2_grooup_TTPs_matched_0or1|safe}},
+            },
+            {
+                label: '3rd: {{ top3_group.name }}',
+                backgroundColor: 'rgb(0, 0, 255, .3)',
+                borderColor: 'rgb(0, 0, 255)',
+                data: {{ top3_grooup_TTPs_matched_0or1|safe}},
+            },
+        ]
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Chart.js Bar Chart'
+                }
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 1,
+                    ticks: {
+                    // forces step size to be 50 units
+                        stepSize: 1
+                    }
+                }
+            }
+        },
+    };
+  </script>
+ <script>
+    const myChart = new Chart(
+      document.getElementById('myChart'),
+      config
+    );
+  </script>
 
 
 {% endblock %}

@@ -10,6 +10,7 @@ from stix2 import Filter, TAXIICollectionSource
 
 
 TTPs_of_intrusion_sets_file_name = "./src/tram/TAXIIandSTIX/TTPs_of_intrusion_sets.json"
+UPDATE_TTPs_of_intrusion_sets_file = False
 
 
 def collection_to_STIX(collection):
@@ -66,7 +67,6 @@ def get_TTPs_of_intrusion_sets(taxii_src: TAXIICollectionSource):
     """
     intrusion_sets = get_intrusion_sets(taxii_src)
     intrusion_sets_with_TTPs = []
-    i = 0
     for intrusion_set in intrusion_sets:
         relationship_of_intrusion_set = get_relationship_of_intrusion_set(
             taxii_src, intrusion_set.id
@@ -81,9 +81,6 @@ def get_TTPs_of_intrusion_sets(taxii_src: TAXIICollectionSource):
                 if external_reference.source_name == "mitre-attack":
                     TTPs.append(external_reference.external_id)
 
-        print("VALOR --> " + str(i))
-        print("Nombre: " + intrusion_set.name + "TTPs" + TTPs)
-        print("\n\n\n\n\n")
         intrusion_sets_with_TTPs.append(
             {
                 "intrusion_set_id": intrusion_set.id,
@@ -93,7 +90,6 @@ def get_TTPs_of_intrusion_sets(taxii_src: TAXIICollectionSource):
         )
 
     save_TTPs_of_intrusion_sets(intrusion_sets_with_TTPs)
-    # return intrusion_sets_with_TTPs
 
 
 def save_TTPs_of_intrusion_sets(intrusion_sets_with_TTPs):
@@ -109,9 +105,16 @@ def save_TTPs_of_intrusion_sets(intrusion_sets_with_TTPs):
 
 def read_TTPs_of_intrusion_sets():
     with open(TTPs_of_intrusion_sets_file_name) as json_file:
-        data = json.load(json_file)
-        return data
-        # print(data["intrusion_sets"])
-        print(len(data["intrusion_sets"]))
-        for i in data["intrusion_sets"]:
-            print(i)
+        return json.load(json_file)
+
+
+def update_TTPs_of_intrusion_sets_file(collection):
+    """
+    Downloading the ttps of each group to the "./src/tram/TAXIIandSTIX/TTPs_of_intrusion_sets.json" file.
+    It is a rather slow process, it can take half an hour.
+
+    Execute only when UPDATE_TTPs_of_intrusion_sets_file variable is TRUE
+
+    :param collection: collection to transform to STIX format.
+    """
+    get_TTPs_of_intrusion_sets(collection_to_STIX(collection))

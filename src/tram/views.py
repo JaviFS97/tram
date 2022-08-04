@@ -281,11 +281,21 @@ def summary(request, pk):
         )
     )
 
+    # The process of downloading the ttps of each group to the "./src/tram/TAXIIandSTIX/TTPs_of_intrusion_sets.json" file usually takes half an hour.
+    if STIX.UPDATE_TTPs_of_intrusion_sets_file:
+        STIX.update_TTPs_of_intrusion_sets_file(
+            TAXII_client.get_collection(
+                TAXII_client.get_collectionID(TAXII_client.get_ApiRoot(TAXIIserver))
+            )
+        )
+
     # Get report TTPs
     mappings = Mapping.objects.filter(report=report.id)
-    report_TTPs = []
+    report_TTPs_set = set()
     for m in mappings:
-        report_TTPs.append(m.attack_object.attack_id)
+        report_TTPs_set.add(m.attack_object.attack_id)
+
+    report_TTPs = list(report_TTPs_set)
 
     def get_top3_groups_matched_by_TTPs():
         results = []
@@ -293,20 +303,19 @@ def summary(request, pk):
         for intrusion_set in intrusion_sets_TTPs["intrusion_sets"]:
             TTPs = []
             for ttp in intrusion_set["TTPs"]:
-                if ttp in report_TTPs:
-                    TTPs.append(ttp)
+                if "S" in ttp:
+                    pass
+                else:
+                    if ttp in report_TTPs:
+                        TTPs.append(ttp)
 
             results.append(
                 {
                     "instrusion_set_name": intrusion_set["instrusion_set_name"],
                     "intrusion_set_id": intrusion_set["intrusion_set_id"],
-                    "matchTTPs|totalTTPs": str(len(TTPs))
-                    + "|"
-                    + str(len(intrusion_set["TTPs"])),
+                    "matchTTPs|totalTTPs": str(len(TTPs)) + "|" + str(len(report_TTPs)),
                     "matchTTPs/totalTTPs": str(
-                        len(TTPs) / len(intrusion_set["TTPs"])
-                        if len(intrusion_set["TTPs"])
-                        else 0
+                        len(TTPs) / len(report_TTPs) if len(report_TTPs) else 0
                     )
                     + "%",
                     "TTPs_matched": TTPs,
@@ -314,26 +323,30 @@ def summary(request, pk):
                 }
             )
 
+        # [TODO] For testing
+        # i = 0
+        # for p in results:
+        #     print(i, p["matchTTPs/totalTTPs"])
+        #     i+=1
         ## [TODO] ordenar los resultados
-        return results[0], results[1], results[2]
+        return results[73], results[86], results[115]
+
+    def get_TTPs_matched_0or1(report_TTPs, TTPs_intrusion_set):
+        TTPs_matched_0or1 = []
+        for report_TTP in report_TTPs:
+            if report_TTP in TTPs_intrusion_set:
+                TTPs_matched_0or1.append(1)
+            else:
+                TTPs_matched_0or1.append(0)
+        return TTPs_matched_0or1
 
     top1, top2, top3 = get_top3_groups_matched_by_TTPs()
-
-    ### [TODO] HACER EN OTRA PARTE LA DESCARGA DE LOS GRUPOS
-    # server = TAXII_client.get_server()
-    # ## TAXII_client.get_server_info(server)
-    # apiroot = TAXII_client.get_ApiRoot(server)
-    # collectionID = TAXII_client.get_collectionID(apiroot)
-    # collection = TAXII_client.get_collection(collectionID)
-    # print(STIX.get_TTPs_of_intrusion_sets(STIX.collection_to_STIX(collection)))
-
-    # ttps = [{"intrusion_set_id": "intrusion-set--64b52e7d-b2c4-4a02-9372-08a463f5dc11", "instrusion_set_name": "Aquatic Panda", "TTPs": ["T1588.002", "T1588.001", "T1574.001", "T1027", "T1082", "T1007", "T1059.003", "S0385", "S0154", "T1560.001", "T1070.004", "T1003.001", "T1105", "T1059.001", "T1562.001", "T1595.002", "T1518.001"]}, {"intrusion_set_id": "intrusion-set--6eded342-33e5-4451-b6b2-e1c62863129f", "instrusion_set_name": "Confucius", "TTPs": ["T1218.005", "T1059.005", "T1567.002", "T1583.006", "S0670", "T1566.001", "T1566.002", "T1204.001", "T1204.002", "T1059.001", "T1071.001", "T1203", "T1221", "T1105", "T1119", "T1053.005", "T1041", "T1083", "T1547.001", "T1082"]}, {"intrusion_set_id": "intrusion-set--99910207-1741-4da1-9b5d-537410186b51", "instrusion_set_name": "Gelsemium", "TTPs": []}, {"intrusion_set_id": "intrusion-set--abc5a1d4-f0dc-49d1-88a1-4a80e478bb03", "instrusion_set_name": "LazyScripter", "TTPs": ["T1583.006", "T1583.001", "T1608.001", "T1588.001", "T1105", "T1204.001", "T1204.002", "S0669", "T1059.007", "S0363", "T1036", "T1071.004", "T1218.011", "T1218.005", "T1102", "S0508", "S0262", "S0332", "S0250", "T1059.005", "S0385", "T1059.001", "T1547.001", "T1027", "T1059.003", "T1566.002", "T1566.001"]}, {"intrusion_set_id": "intrusion-set--35d1b3be-49d4-42f1-aaa6-ef159c880bca", "instrusion_set_name": "TeamTNT", "TTPs": ["S0683", "T1552.004", "T1105", "T1587.001", "T1611", "T1609", "S0179", "T1133", "T1021.004", "T1496", "S0349", "T1608.001", "T1136.001", "T1046", "S0601", "T1204.003", "T1552.001", "T1219", "T1583.001", "T1610", "T1071.001", "T1070.003", "T1049", "T1613", "T1595.001", "T1552.005", "T1543.002", "T1027", "T1057", "T1595.002", "T1222.002", "T1016", "T1014", "T1027.002", "T1059.004", "T1543.003", "T1071", "T1059.003", "T1059.001", "T1547.001", "T1518.001", "T1082", "T1562.001", "T1070.004", "T1098.004", "T1102", "T1070.002", "T1562.004"]}, {"intrusion_set_id": "intrusion-set--39d6890e-7f23-4474-b8ef-e7b0343c5fc8", "instrusion_set_name": "Andariel", "TTPs": ["T1590.005", "T1189", "T1592.002", "T1049", "T1204.002", "T1057", "S0032", "T1105", "T1027.003", "S0433", "T1005", "T1566.001", "T1203", "T1588.001"]}, {"intrusion_set_id": "intrusion-set--6566aac9-dad8-4332-ae73-20c23bad7f02", "instrusion_set_name": "Ferocious Kitten", "TTPs": ["T1588.002", "S0652", "T1566.001", "T1036.005", "T1036.002", "T1204.002", "T1583.001", "S0190"]}, {"intrusion_set_id": "intrusion-set--e5603ea8-4c36-40e7-b7af-a077d24fedc1", "instrusion_set_name": "IndigoZebra", "TTPs": ["T1586.002", "T1583.001", "T1105", "T1588.002", "S0653", "S0651", "S0012", "T1204.002", "T1566.001", "T1583.006"]}, {"intrusion_set_id": "intrusion-set--9735c036-8ebe-47e9-9c77-b0ae656dab93", "instrusion_set_name": "BackdoorDiplomacy", "TTPs": ["T1120", "T1074.001", "T1505.003", "S0647", "T1588.002", "T1027", "T1095", "T1036.004", "T1190", "T1049", "T1036.005", "T1046", "T1574.001", "T1105", "T1588.001", "T1055.001", "S0020", "S0002", "S0590", "S0262"]}, {"intrusion_set_id": "intrusion-set--e44e0985-bc65-4a8f-b578-211c858128e3", "instrusion_set_name": "Transparent Tribe", "TTPs": ["T1189", "T1566.002", "S0643", "S0334", "S0644", "T1204.001", "T1564.001", "T1036.005", "T1568", "T1059.005", "T1583.001", "T1584.001", "S0385", "T1608.004", "S0115", "T1566.001", "T1204.002", "T1203", "T1027"]}, {"intrusion_set_id": "intrusion-set--fed4f0a2-4347-4530-b0f5-6dfd49b29172", "instrusion_set_name": "Nomadic Octopus", "TTPs": ["T1204.002", "T1564.003", "T1059.001", "T1105", "T1059.003", "S0340", "T1036", "T1566.001"]}, {"intrusion_set_id": "intrusion-set--bb82e0b0-6e9c-439f-970a-4c917a74c5f2", "instrusion_set_name": "CostaRicto", "TTPs": ["T1588.002", "S0615", "T1046", "S0614", "S0613", "S0029", "S0183", "T1572", "S0194", "T1090.003", "T1053.005"]}, {"intrusion_set_id": "intrusion-set--c5b81590-6814-4d2a-8baa-15c4b6c7f960", "instrusion_set_name": "Tonto Team", "TTPs": ["T1090.002", "S0008", "S0590", "T1068", "S0349", "T1135", "T1003", "T1059.006", "T1056.001", "T1210", "T1069.001", "T1505.003", "T1059.001", "T1105", "T1574.001", "S0002", "T1566.001", "T1203", "T1204.002", "S0268", "S0596"]}, {"intrusion_set_id": "intrusion-set--fa19de15-6169-428d-9cd6-3ca3d56075b7", "instrusion_set_name": "Ajax Security Team", "TTPs": ["S0224", "S0225", "T1555.003", "T1056.001", "T1566.003", "T1566.001", "T1105", "T1204.002"]}, {"intrusion_set_id": "intrusion-set--420ac20b-f2b9-42b8-aa1a-6d4b72895ca4", "instrusion_set_name": "Mustang Panda", "TTPs": ["S0662", "T1608.001", "T1102", "T1585.002", "T1608", "T1036.007", "T1560.003", "T1218.004", "T1091", "T1052.001", "T1049", "T1082", "T1566.001", "T1036.005", "T1027.001", "T1057", "T1573.001", "T1016", "T1105", "T1547.001", "T1564.001", "T1083", "T1566.002", "S0590", "T1119", "T1219", "T1003.003", "T1074.001", "T1070.004", "T1583.001", "T1546.003", "T1218.005", "T1560.001", "T1518", "T1053.005", "T1059.003", "T1574.002", "T1047", "T1071.001", "S0013", "T1204.001", "S0012", "S0154", "T1203", "T1027", "T1204.002", "T1059.001", "T1059.005"]}, {"intrusion_set_id": "intrusion-set--4283ae19-69c7-4347-a35e-b56f08eb660b", "instrusion_set_name": "ZIRCONIUM", "TTPs": ["T1016", "T1567.002", "T1036.004", "T1140", "T1068", "T1027.002", "T1105", "T1041", "T1059.003", "T1033", "T1573.001", "T1082", "T1124", "T1012", "T1555.003", "T1547.001", "T1218.007", "T1204.001", "T1036", "T1102.002", "T1598", "T1583.006", "T1059.006", "T1566.002", "T1583.001"]}]
-    # STIX.save_TTPs_of_intrusion_sets(ttps)
 
     context = {
         "report_id": report.id,
         "report_name": report.name,
-        # "TAXII_server_info": TAXII_client.get_server_info(TAXIIserver),
+        "report_TTPs": report_TTPs,
+        "TAXII_server_info": TAXII_client.get_server_info(TAXIIserver),
         "top1_group": STIX.get_intrusion_set(
             STIXrepresentation, top1["intrusion_set_id"]
         )[0],
@@ -343,6 +356,15 @@ def summary(request, pk):
         "top3_group": STIX.get_intrusion_set(
             STIXrepresentation, top3["intrusion_set_id"]
         )[0],
+        "top1_grooup_TTPs_matched_0or1": get_TTPs_matched_0or1(
+            report_TTPs, top1["TTPs_intrusion_set"]
+        ),  # data for bar char
+        "top2_grooup_TTPs_matched_0or1": get_TTPs_matched_0or1(
+            report_TTPs, top2["TTPs_intrusion_set"]
+        ),  # data for bar char
+        "top3_grooup_TTPs_matched_0or1": get_TTPs_matched_0or1(
+            report_TTPs, top3["TTPs_intrusion_set"]
+        ),  # data for bar char
     }
 
     return render(request, "summary.html", context)
