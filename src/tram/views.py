@@ -297,6 +297,23 @@ def summary(request, pk):
 
     report_TTPs = list(report_TTPs_set)
 
+    def get_abstract(report_text):
+        import re
+
+        regex = "Executive Summary"  # [TODO] Add more titles related to the executive summary
+        ABSTRACT_SEARCH_LENGTH = 5000
+        ABSTRACT_LENGHT = 1000
+
+        try:
+            return (
+                re.split(regex, report_text[:ABSTRACT_SEARCH_LENGTH])[-1][
+                    :ABSTRACT_LENGHT
+                ]
+                + "..."
+            )
+        except:
+            return "No summary exists or could not be retrieved."
+
     def get_top3_groups_matched_by_TTPs():
         results = []
         intrusion_sets_TTPs = STIX.read_TTPs_of_intrusion_sets()
@@ -323,13 +340,19 @@ def summary(request, pk):
                 }
             )
 
-        # [TODO] For testing
-        # i = 0
-        # for p in results:
-        #     print(i, p["matchTTPs/totalTTPs"])
-        #     i+=1
-        ## [TODO] ordenar los resultados
-        return results[73], results[86], results[115]
+        top3 = []
+        for i in range(3):
+            max = maxPosition = index = 0
+            for r in results:
+                value = float(r["matchTTPs/totalTTPs"].split("%")[0])
+                if value > max:
+                    max = value
+                    maxPosition = index
+                index += 1
+
+            top3.append(results.pop(maxPosition))
+
+        return top3[0], top3[1], top3[2]
 
     def get_TTPs_matched_0or1(report_TTPs, TTPs_intrusion_set):
         TTPs_matched_0or1 = []
@@ -345,6 +368,7 @@ def summary(request, pk):
     context = {
         "report_id": report.id,
         "report_name": report.name,
+        "report_abstract": get_abstract(report.text),
         "report_TTPs": report_TTPs,
         "TAXII_server_info": TAXII_client.get_server_info(TAXIIserver),
         "top1_group": STIX.get_intrusion_set(
