@@ -11,6 +11,12 @@
                 window.location.reload();
             }, 30000);
         });
+
+        function summary_clicked(summary_id) {
+          document.getElementById("SummaryButton-" + summary_id).style = "display: none;"
+          document.getElementById("LoadingButton-" + summary_id).style = "display: inline;"
+        }
+
     </script>
 {% endblock %}
 
@@ -65,7 +71,11 @@
       <td>
         <div class="btn-group">
           <a href="/analyze/{{ report.id }}" class="btn btn-sm btn-outline-secondary">Analyze</a>
-          <a href="/summary/{{ report.id }}" class="btn btn-sm btn-outline-secondary">Summary</a>
+          <a href="/summary/{{ report.id }}" class="btn btn-sm btn-outline-secondary" id="SummaryButton-{{report.id}}" onclick="summary_clicked({{report.id}})">Summary</a>
+          <button class="btn btn-sm btn-outline-secondary" type="button" disabled="" id="LoadingButton-{{report.id}}" style="display: none;">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading...
+          </button>
           <div class="dropdown btn-group">
             <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="export-dropdown"
               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

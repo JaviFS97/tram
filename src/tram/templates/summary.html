@@ -311,15 +311,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-
-    // [TODO] for testing
-    var reportTTPs = {{ report_TTPs|safe }}
-    const labels = reportTTPs;
-    console.log(reportTTPs)
-    console.log({{ top1_grooup_TTPs_matched_0or1|safe}})
-    console.log({{ top2_grooup_TTPs_matched_0or1|safe}})
-    console.log({{ top3_grooup_TTPs_matched_0or1|safe}})
-
     const data = {
         labels: {{ report_TTPs|safe }},
         datasets: [
