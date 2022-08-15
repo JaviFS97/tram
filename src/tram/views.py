@@ -297,10 +297,55 @@ def summary(request, pk):
 
     report_TTPs = list(report_TTPs_set)
 
-    def get_abstract(report_text):
+    def get_keywords():
+        """
+        Obtains all the keywords in the text by applying regular expressions on the text.
+        The patterns used as regular expressions can be found in the file: settings.DATA_DIRECTORY / "patterns.json"
+        """
+        import json
         import re
 
-        regex = "Executive Summary"  # [TODO] Add more titles related to the executive summary
+        from django.conf import settings
+        from nltk.stem import WordNetLemmatizer
+
+        wnl = WordNetLemmatizer()
+        report_keywords = {}
+        with open(settings.DATA_DIRECTORY / "patterns.json", "r") as f:
+            patters_json = json.load(f)
+
+            for pattern in patters_json["patterns"]:
+                pattern_name, pattern_values, pattern_pos_tag_type = (
+                    pattern["name"],
+                    pattern["values"],
+                    pattern["pos_tag_type"],
+                )
+                keywords = set(
+                    re.findall(pattern_values, report.text)
+                )  # Applies regular expressions over the entire text
+                keywords_lemmas = set()
+
+                for word in keywords:
+                    keyword_lemma = wnl.lemmatize(
+                        word, pattern_pos_tag_type
+                    )  # Gets the lemma of each word to avoid repetitions in dictionary
+                    keywords_lemmas.add(keyword_lemma)
+
+                report_keywords[pattern_name] = keywords_lemmas
+
+            return report_keywords
+
+    def get_abstract(report_text):
+        """
+        Get the summary of the report itself.
+
+        It searches, with the regular expressions defined in the variable "regex", the summary in the first 5000 words of the report.
+        In case of finding matches in the first 5000 words of the report, a total of 1000 are extracted as part of the executive summary.
+
+        :param report_text: All report content in plain text format.
+        """
+        import re
+
+        regex = "Executive Summary"  # [TODO] Add more titles related to the summary
         ABSTRACT_SEARCH_LENGTH = 5000
         ABSTRACT_LENGHT = 1000
 
@@ -366,9 +411,15 @@ def summary(request, pk):
     top1, top2, top3 = get_top3_groups_matched_by_TTPs()
 
     context = {
-        "report_id": report.id,
-        "report_name": report.name,
+        "report_info": {
+            "name": report.name,
+            "id": report.id,
+            "created_by": report.created_by,
+            "created_on": report.created_on,
+            "updated_on": report.updated_on,
+        },
         "report_abstract": get_abstract(report.text),
+        "report_keywords": get_keywords(),
         "report_TTPs": report_TTPs,
         "TAXII_server_info": TAXII_client.get_server_info(TAXIIserver),
         "top1_group": STIX.get_intrusion_set(
