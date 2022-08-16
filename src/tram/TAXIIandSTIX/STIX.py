@@ -157,9 +157,9 @@ def get_mitigations_and_detections_of_attack_pattern(
     taxii_src: TAXIICollectionSource, report_TTPs
 ):
     """
-    Obtains
+    Obtains the mitigations and detection of the TTPs present in the report.
 
-    [WARNING]!!!!: this process takes several minutes.
+    [WARNING]!!!!: this process takes ~15sec.
     [TODO] [As an improvement] There is no point in running it every time the application is opened. Save it to disk (along with the creation date) and update it from time to time.
 
     :param taxii_src: collection to transform to STIX format.
