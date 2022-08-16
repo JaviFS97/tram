@@ -283,11 +283,7 @@ def summary(request, pk):
 
     # The process of downloading the ttps of each group to the "./src/tram/TAXIIandSTIX/TTPs_of_intrusion_sets.json" file usually takes half an hour.
     if STIX.UPDATE_TTPs_of_intrusion_sets_file:
-        STIX.update_TTPs_of_intrusion_sets_file(
-            TAXII_client.get_collection(
-                TAXII_client.get_collectionID(TAXII_client.get_ApiRoot(TAXIIserver))
-            )
-        )
+        STIX.update_TTPs_of_intrusion_sets_file(STIXrepresentation)
 
     # Get report TTPs
     mappings = Mapping.objects.filter(report=report.id)
@@ -439,7 +435,10 @@ def summary(request, pk):
         ),  # data for bar char
         "top3_grooup_TTPs_matched_0or1": get_TTPs_matched_0or1(
             report_TTPs, top3["TTPs_intrusion_set"]
-        ),  # data for bar char
+        ),  # data for bar char,
+        "attack_pattern_mitigations_and_detections": STIX.get_mitigations_and_detections_of_attack_pattern(
+            STIXrepresentation, report_TTPs
+        ),
     }
 
     return render(request, "summary.html", context)

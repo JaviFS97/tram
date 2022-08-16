@@ -332,12 +332,42 @@
     <div class="accordion-item">
         <h2 class="accordion-header" id="headingFour">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-            Mitigations
+            Mitigations and Detections based on Report TTPs
           </button>
         </h2>
         <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
-          <div class="accordion-body">
-          </div>
+            <div class="accordion-body">
+
+                <div class="row">
+                    <div class="col-3">
+                        <div id="list-example" class="list-group" style="height: 600px; overflow: auto;">
+                            {% for at in attack_pattern_mitigations_and_detections %}
+                                <a class="list-group-item list-group-item-action" href="#list-item-{{at.attack_pattern.id}}">{{ at.attack_pattern_id}} - {{ at.attack_pattern.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-9">
+                        <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" style="height: 600px; overflow: auto;" tabindex="0">
+                            {% for at in attack_pattern_mitigations_and_detections %}
+                                <h4 id="list-item-{{at.attack_pattern.id}}" style="font-weight: bold"> {{ at.attack_pattern_id}} - {{ at.attack_pattern.name }} </h4>
+                                <h6 style="font-weight: bold">Mitigations</h6>
+                                    {% if at.attack_pattern_mitigations %}
+                                        {% for mi in at.attack_pattern_mitigations %}
+                                            <div style="margin-bottom: 20px;">{{mi.description}}</div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div style="margin-bottom: 20px;">No mitigations.</div>
+                                    {% endif%}
+                                <h6 style="font-weight: bold">Detections</h6>
+                                <div style="margin-bottom: 50px;">{{at.attack_pattern_detections}}</div>
+
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
 

@@ -3,8 +3,10 @@ import json
 
 from stix2 import Filter, TAXIICollectionSource
 
-## Aqui está la API de STIX
+## STIX API
 # https://stix2.readthedocs.io/en/latest/index.html
+## OASIS Standard for STIX
+# https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html
 ##
 # pip install stix2
 
@@ -118,3 +120,75 @@ def update_TTPs_of_intrusion_sets_file(collection):
     :param collection: collection to transform to STIX format.
     """
     get_TTPs_of_intrusion_sets(collection_to_STIX(collection))
+
+
+def get_attack_patterns(taxii_src: TAXIICollectionSource):
+    """
+    It returns all TTPs.
+
+    :param taxii_src: collection to transform to STIX format.
+    """
+    return taxii_src.query(Filter("type", "=", "attack-pattern"))
+
+
+def get_relationships_of_attack_pattern(
+    taxii_src: TAXIICollectionSource, attack_pattern_id
+):
+    """
+    The Relationship object is used to link together two SDOs in order to describe how they are related to each other.
+    In this case we are looking for all the relations in which an attack_pattern_id participates, as a target_ref.
+
+    :param taxii_src: collection to transform to STIX format.
+    :param attack_pattern_id: identifier of the attack_pattern_id we want to get the relationship from.
+    """
+    return taxii_src.query(Filter("target_ref", "=", attack_pattern_id))
+
+
+def get_mitigations(taxii_src: TAXIICollectionSource):
+    """
+    It returns all Mitigations. Mitigations are only found within the object "relationship".
+
+    :param taxii_src: collection to transform to STIX format.
+    """
+    return taxii_src.query(Filter("relationship_type", "=", "mitigates"))
+
+
+def get_mitigations_and_detections_of_attack_pattern(
+    taxii_src: TAXIICollectionSource, report_TTPs
+):
+    """
+    Obtains
+
+    [WARNING]!!!!: this process takes several minutes.
+    [TODO] [As an improvement] There is no point in running it every time the application is opened. Save it to disk (along with the creation date) and update it from time to time.
+
+    :param taxii_src: collection to transform to STIX format.
+    :param report_TTPs: all TTPs involved in this report.
+    """
+    mitigations = get_mitigations(taxii_src)
+    attack_patterns = get_attack_patterns(taxii_src)
+    attack_pattern_with_mitigations_and_detections = []
+    for attack_pattern in attack_patterns:
+        if attack_pattern.external_references[0].external_id in report_TTPs:
+
+            # Gets attack_pattern mitigations
+            attack_pattern_mitigations = []
+            for mitigation in mitigations:
+                if mitigation.target_ref == attack_pattern.id:
+                    attack_pattern_mitigations.append(mitigation)
+
+            # Gets attack_pattern detections
+            attack_pattern_detections = attack_pattern.x_mitre_detection
+
+            attack_pattern_with_mitigations_and_detections.append(
+                {
+                    "attack_pattern": attack_pattern,
+                    "attack_pattern_id": attack_pattern.external_references[
+                        0
+                    ].external_id,
+                    "attack_pattern_mitigations": attack_pattern_mitigations,
+                    "attack_pattern_detections": attack_pattern_detections,
+                }
+            )
+
+    return attack_pattern_with_mitigations_and_detections
