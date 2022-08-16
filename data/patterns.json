@@ -3,7 +3,6 @@
     "patterns": [
         {
             "name": "Verbs",
-            "id": 0,
             "values": "makes|make|tries|try|adds|add|runs|run|deletes|delete|removes|remove|registers|register|replicates|replicate|creates|create|executes|execute|modifies|modify|downloads|download|spreads|spread|conducts|conduct|copies|copy|forks|fork|writes|write|reads|read|retrieves|retrieve|redirects|redirect|wipes|wipe|exfiltrates|exfiltrate|installs|install|deploys|deploy|clears|clear|erases|erase|drops|drop|entrenches|entrench|runs|run|collects|collect|writes|write|locates|locate|allocates|allocate|clones|clone|uses|use|performs|perform|spawns|spawn|issues|issue|sets|set|clones|clone|executes|execute|launches|launch|saves|save|adds|add|extracts|extract|gets|get|injects|inject|obtains|obtain|gathers|gather|downloads|download|beacons|beacon|places|place|navigates|navigate|composes|compose|acquires|acquire|browses|browse|performs|perform|opens|open|sends|send|targets|target|accepts|accept|receives|receive|transfers|transfer|invokes|invoke|modify|modifies|connects|connect|communicates|communicate|posts|post|propagates|propagate|terminates|terminate|monitors|monitor|attempts|attempt|generates|generate|searches|search|contains|contain|hides|hide|infects|infect|appends|append|closes|close|checks|check",
             "pos_tag_type": "v"
 

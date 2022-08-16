@@ -351,6 +351,7 @@
                         <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" style="height: 600px; overflow: auto;" tabindex="0">
                             {% for at in attack_pattern_mitigations_and_detections %}
                                 <h4 id="list-item-{{at.attack_pattern.id}}" style="font-weight: bold"> {{ at.attack_pattern_id}} - {{ at.attack_pattern.name }} </h4>
+                                <div style="margin-bottom: 20px;">{{ at.attack_pattern.description | truncatechars:500}}</div>
                                 <h6 style="font-weight: bold">Mitigations</h6>
                                     {% if at.attack_pattern_mitigations %}
                                         {% for mi in at.attack_pattern_mitigations %}
