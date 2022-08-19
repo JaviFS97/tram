@@ -167,6 +167,30 @@ class SentenceViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+def IOCDetails(request):
+    import json
+
+    from tram.AlienVault import otx_client
+
+    IOC_value = request.GET["IOC_value"]
+    IOC_type = request.GET["IOC_type"]
+
+    if IOC_type == "IP":
+        result = otx_client.get_ip_alerts(IOC_value)
+        print(result)
+        return HttpResponse(json.dumps(result))
+
+    # response_format = {
+    #     "version": "4.3",
+    #     "domain": "mitre-enterprise",
+    # }
+    # response = Response(response_format)
+
+    # return response
+
+    return HttpResponse("holaaaaa")
+
+
 @login_required
 def index(request):
     jobs = DocumentProcessingJob.objects.all()
@@ -465,9 +489,9 @@ def summary(request, pk):
         "top3_grooup_TTPs_matched_0or1": get_TTPs_matched_0or1(
             report_TTPs, top3["TTPs_intrusion_set"]
         ),  # data for bar char,
-        "attack_pattern_mitigations_and_detections": STIX.get_mitigations_and_detections_of_attack_pattern(
-            STIXrepresentation, report_TTPs
-        ),
+        # "attack_pattern_mitigations_and_detections": STIX.get_mitigations_and_detections_of_attack_pattern(
+        #     STIXrepresentation, report_TTPs
+        # ),
     }
 
     return render(request, "summary.html", context)

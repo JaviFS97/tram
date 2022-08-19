@@ -437,8 +437,10 @@
                                                 </tr>
                                                 {% for IOC_value in IOC_type_values %}
                                                 <tr>
-                                                    <td>{{ IOC_value }}</td>
-                                                    <td>1</td>
+                                                    <td>{{IOC_value}}</td>
+                                                    <td style="text-align: center;">
+                                                        <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="getIndicatorInfo('{{IOC_value}}', '{{IOC_type_name}}')">+info</button>
+                                                    </td>
                                                     <td>2</td>
                                                 </tr>
                                                 {% endfor %}
@@ -459,6 +461,26 @@
     </div>
 
 </div>
+
+<div class="offcanvas offcanvas-bottom" style="height: 65%;" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasBottomLabel">Offcanvas bottom</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body small">
+        <div id="offcanvas_spinner" class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div id="offcanvas-body-IOC-content">
+
+            <!-- <h4>AlienVault Pulses:</h4>
+            <div class="accordion" id="accordion-body-IOC">
+
+            </div> -->
+
+
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

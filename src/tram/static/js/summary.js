@@ -57,3 +57,44 @@ function changeLabel(button_id){
     text.data = text.data == "Display ATT&CK Matrix" ? "Hide ATT&CK Matrix" : "Display ATT&CK Matrix";
 }
 
+function getIndicatorInfo(IOC_value, IOC_type_name){
+    console.log("HOlaaaaa", IOC_value, IOC_type_name)
+    var spinner = document.getElementById('offcanvas_spinner');
+    var text = document.getElementById('offcanvasBottomLabel').firstChild;
+    var accordion = document.getElementById('accordion-body-IOC');
+    text.data = IOC_value;
+    
+    spinner.hidden = false;
+
+    $.ajax({    
+        type: "GET",
+        url: `/api/IOCDetails/?IOC_value=${IOC_value}&IOC_type=${IOC_type_name}`,
+        dataType: "json",
+        success: function (IOC_details) {
+            console.log(IOC_details['pulse_info']);
+            spinner.hidden = true;
+            
+            var $accordion_content = $('')
+            
+            for (pulse in IOC_details['pulse_info']){
+                console.log(pulse)
+                $accordion_content.append(
+                    '<div class="accordion-item">\
+                        <h2 class="accordion-header" id="flush-headingOne">\
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne"> ${sentence.id} </button>\
+                        </h2>\
+                        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">\
+                        <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the first ites accordion body.</div>\
+                        </div>\
+                    </div>'
+                );
+            }
+
+            accordion.innerHTML = $accordion_content;
+
+        },
+        failure: function (data) {
+            console.log(`Failure: ${data}`);
+        }
+    });
+}

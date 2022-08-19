@@ -47,6 +47,7 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/download/<int:doc_id>", views.download_document),
     path("api/train-model/<name>", views.train_model),
+    path("api/IOCDetails/", views.IOCDetails),
     path("docs/", TemplateView.as_view(template_name="tram_documentation.html")),
     path("login/", auth_views.LoginView.as_view()),
     path("logout/", auth_views.LogoutView.as_view()),
