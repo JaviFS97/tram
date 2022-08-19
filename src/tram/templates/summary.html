@@ -10,6 +10,24 @@
     const REPORT_ID = parseInt({{ report_info.id }});
 </script>
 
+<style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+</style>
+
 {% endblock %}
 
 {% block back-to-index-link %}
@@ -380,8 +398,63 @@
           </button>
         </h2>
         <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
-          <div class="accordion-body">
-          </div>
+            <div class="accordion-body">
+                <div class="row">
+                    <div class="col-2" style="margin: auto;" style="height: 650px; overflow: auto;">
+                        <div class="list-group" id="list-tab" role="tablist">
+                            {% with first_element_name="URL" %}
+                                {% for IOC_type_name, IOC_type_values in report_IOCs.items %}
+                                    {% if IOC_type_name == first_element_name  %}
+                                    <a class="list-group-item list-group-item-action active" id="list-{{IOC_type_name}}-list" data-bs-toggle="list" href="#list-{{IOC_type_name}}" role="tab" aria-controls="list-IOCs">
+                                    {% else %}
+                                    <a class="list-group-item list-group-item-action" id="list-{{IOC_type_name}}-list" data-bs-toggle="list" href="#list-{{IOC_type_name}}" role="tab" aria-controls="list-IOCs">
+                                    {% endif %}
+                                        {{ IOC_type_name }}
+                                    </a>
+
+                                {% endfor %}
+
+                            {% endwith %}
+
+                        </div>
+                    </div>
+                    <div class="col-10" style="height: 650px; overflow: auto;">
+                        <div class="tab-content" id="nav-tabContent-IOCs">
+                            {% with first_element_name="URL" %}
+                                {% for IOC_type_name, IOC_type_values in report_IOCs.items %}
+                                    {% if IOC_type_name == first_element_name  %}
+                                        <div class="tab-pane fade show active" id="list-{{IOC_type_name}}" role="tabpanel" aria-labelledby="list-IOCs-list">
+                                    {% else %}
+                                        <div class="tab-pane fade" id="list-{{IOC_type_name}}" role="tabpanel" aria-labelledby="list-IOCs-list">
+                                    {% endif %}
+
+                                    {% if IOC_type_values %}
+                                            <table style="margin: auto; ">
+                                                <tr>
+                                                    <th style="text-align: center;">IOC</th>
+                                                    <th style="text-align: center;">Contact</th>
+                                                    <th style="text-align: center;">Country</th>
+                                                </tr>
+                                                {% for IOC_value in IOC_type_values %}
+                                                <tr>
+                                                    <td>{{ IOC_value }}</td>
+                                                    <td>1</td>
+                                                    <td>2</td>
+                                                </tr>
+                                                {% endfor %}
+
+                                            </table>
+                                        {% else %}
+                                        <br><br><br><br><br><br><br><br><br><br><br><br><br>
+                                            <h3 style="margin: auto; ">No matches!</h3>
+                                        {% endif %}
+                                        </div>
+                                {% endfor %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

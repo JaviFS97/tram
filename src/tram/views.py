@@ -296,7 +296,7 @@ def summary(request, pk):
     def get_keywords():
         """
         Obtains all the keywords in the text by applying regular expressions on the text.
-        The patterns used as regular expressions can be found in the file: settings.DATA_DIRECTORY / "patterns.json"
+        The patterns used as regular expressions can be found in the file: settings.DATA_DIRECTORY / "Keywords-patterns.json"
         """
         import json
         import re
@@ -306,7 +306,7 @@ def summary(request, pk):
 
         wnl = WordNetLemmatizer()
         report_keywords = {}
-        with open(settings.DATA_DIRECTORY / "patterns.json", "r") as f:
+        with open(settings.DATA_DIRECTORY / "Keywords-patterns.json", "r") as f:
             patters_json = json.load(f)
 
             for pattern in patters_json["patterns"]:
@@ -315,6 +315,7 @@ def summary(request, pk):
                     pattern["values"],
                     pattern["pos_tag_type"],
                 )
+
                 keywords = set(
                     re.findall(pattern_values, report.text)
                 )  # Applies regular expressions over the entire text
@@ -326,7 +327,7 @@ def summary(request, pk):
                     )  # Gets the lemma of each word to avoid repetitions in dictionary
                     keywords_lemmas.add(keyword_lemma)
 
-                report_keywords[pattern_name] = keywords_lemmas
+                report_keywords[pattern_name] = keywords
 
             return report_keywords
 
@@ -404,6 +405,33 @@ def summary(request, pk):
                 TTPs_matched_0or1.append(0)
         return TTPs_matched_0or1
 
+    def get_IOCs():
+        """
+        Obtains all the IOCs in the text by applying regular expressions on the text.
+        The patterns used as regular expressions can be found in the file: settings.DATA_DIRECTORY / "IOCs-patterns.json"
+        """
+        import json
+        import re
+
+        from django.conf import settings
+        from nltk.stem import WordNetLemmatizer
+
+        wnl = WordNetLemmatizer()
+        report_keywords = {}
+        with open(settings.DATA_DIRECTORY / "IOCs-patterns.json", "r") as f:
+            patters_json = json.load(f)
+
+            for pattern in patters_json["patterns"]:
+                pattern_name, pattern_values = (pattern["name"], pattern["values"])
+
+                keywords = set(
+                    re.findall(pattern_values, report.text)
+                )  # Applies regular expressions over the entire text
+
+                report_keywords[pattern_name] = keywords
+
+            return report_keywords
+
     top1, top2, top3 = get_top3_groups_matched_by_TTPs()
 
     context = {
@@ -416,6 +444,7 @@ def summary(request, pk):
         },
         "report_abstract": get_abstract(report.text),
         "report_keywords": get_keywords(),
+        "report_IOCs": get_IOCs(),
         "report_TTPs": report_TTPs,
         "TAXII_server_info": TAXII_client.get_server_info(TAXIIserver),
         "top1_group": STIX.get_intrusion_set(
