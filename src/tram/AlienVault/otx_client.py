@@ -30,46 +30,17 @@ def getValue(results, keys):
         return results
 
 
-def get_alerts(indicator_details, standard_mode=True, indicator_type=""):
+def get_alerts(indicator_details):
     alerts = []
 
-    if standard_mode:
-        # Return nothing if it's in the whitelist
-        validation = getValue(indicator_details, ["validation"])
-        if not validation:
-            pulses = getValue(indicator_details, ["pulse_info", "pulses"])
-            if pulses:
-                for pulse in pulses:
-                    if "name" in pulse:
-                        alerts.append("In pulse: " + pulse["name"])
-
-    else:
-        if indicator_type == "URL":
-            google = getValue(
-                indicator_details, ["url_list", "url_list", "result", "safebrowsing"]
-            )
-            if google and "response_code" in str(google):
-                alerts.append({"google_safebrowsing": "malicious"})
-
-            clamav = getValue(
-                indicator_details,
-                ["url_list", "url_list", "result", "multiav", "matches", "clamav"],
-            )
-            if clamav:
-                alerts.append({"clamav": clamav})
-
-            avast = getValue(
-                indicator_details,
-                ["url_list", "url_list", "result", "multiav", "matches", "avast"],
-            )
-            if avast:
-                alerts.append({"avast": avast})
-
-            pulses = getValue(indicator_details, ["general", "pulse_info", "pulses"])
-            if pulses:
-                for pulse in pulses:
-                    if "name" in pulse:
-                        alerts.append("In pulse: " + pulse["name"])
+    # Return nothing if it's in the whitelist
+    validation = getValue(indicator_details, ["validation"])
+    if not validation:
+        pulses = getValue(indicator_details, ["pulse_info", "pulses"])
+        if pulses:
+            for pulse in pulses:
+                if "name" in pulse:
+                    alerts.append("In pulse: " + pulse["name"])
 
     return alerts
 
@@ -145,7 +116,6 @@ def get_url_alerts(url):
 
         validation = getValue(indicator_details, ["validation"])
         if not validation:
-            # alerts = get_alerts(otx.get_indicator_details_full(IndicatorTypes.URL, url), False, 'URL')
             alerts = get_alerts(indicator_details)
             if len(alerts) > 0:
                 return 1, indicator_details
