@@ -176,19 +176,36 @@ def IOCDetails(request):
     IOC_type = request.GET["IOC_type"]
 
     if IOC_type == "IP":
-        result = otx_client.get_ip_alerts(IOC_value)
-        print(result)
-        return HttpResponse(json.dumps(result))
+        response_code, IOCDetails = otx_client.get_ip_alerts(IOC_value)
+    elif IOC_type == "Host":
+        response_code, IOCDetails = otx_client.get_host_alerts(IOC_value)
+    elif IOC_type == "URL":
+        response_code, IOCDetails = otx_client.get_url_alerts(IOC_value)
+    elif IOC_type == "SHA1" or IOC_type == "SHA256" or IOC_type == "MD5":
+        response_code, IOCDetails = otx_client.get_hash_alerts(IOC_value)
 
-    # response_format = {
-    #     "version": "4.3",
-    #     "domain": "mitre-enterprise",
-    # }
-    # response = Response(response_format)
-
-    # return response
-
-    return HttpResponse("holaaaaa")
+    if response_code == -1:
+        response_format = {"response_code": -1, "info": "Malformed indicator"}
+    elif response_code == 0:
+        response_format = {"response_code": 0, "info": "Private IP"}
+    elif response_code == 1:
+        response_format = {
+            "response_code": 1,
+            "info": "Identified as potentially malicious",
+            "result": IOCDetails,
+        }
+    elif response_code == 2:
+        response_format = {
+            "response_code": 2,
+            "info": "Unknown or not identified as malicious",
+        }
+    elif response_code == 3:
+        response_format = {
+            "response_code": 3,
+            "info": "Validated",
+            "validations": IOCDetails,
+        }
+    return HttpResponse(json.dumps(response_format))
 
 
 @login_required
@@ -441,20 +458,24 @@ def summary(request, pk):
         from nltk.stem import WordNetLemmatizer
 
         wnl = WordNetLemmatizer()
-        report_keywords = {}
+        report_IOCs = {}
         with open(settings.DATA_DIRECTORY / "IOCs-patterns.json", "r") as f:
             patters_json = json.load(f)
 
             for pattern in patters_json["patterns"]:
                 pattern_name, pattern_values = (pattern["name"], pattern["values"])
 
-                keywords = set(
+                IOCs = set(
                     re.findall(pattern_values, report.text)
                 )  # Applies regular expressions over the entire text
 
-                report_keywords[pattern_name] = keywords
+                if pattern_name == "IP":  # [FOR TESTING] Delete
+                    IOCs.add("8.8.8.8")
+                    IOCs.add("142.112.11.31")
 
-            return report_keywords
+                report_IOCs[pattern_name] = IOCs
+
+            return report_IOCs
 
     top1, top2, top3 = get_top3_groups_matched_by_TTPs()
 
@@ -489,9 +510,9 @@ def summary(request, pk):
         "top3_grooup_TTPs_matched_0or1": get_TTPs_matched_0or1(
             report_TTPs, top3["TTPs_intrusion_set"]
         ),  # data for bar char,
-        # "attack_pattern_mitigations_and_detections": STIX.get_mitigations_and_detections_of_attack_pattern(
-        #     STIXrepresentation, report_TTPs
-        # ),
+        "attack_pattern_mitigations_and_detections": STIX.get_mitigations_and_detections_of_attack_pattern(
+            STIXrepresentation, report_TTPs
+        ),
     }
 
     return render(request, "summary.html", context)

@@ -1,5 +1,6 @@
 import argparse
 import hashlib
+from warnings import catch_warnings
 
 from OTXv2 import IndicatorTypes, OTXv2
 
@@ -29,75 +30,158 @@ def getValue(results, keys):
         return results
 
 
-def get_alerts(indicator_details):
+def get_alerts(indicator_details, standard_mode=True, indicator_type=""):
     alerts = []
-    # Return nothing if it's in the whitelist
-    validation = getValue(indicator_details, ["validation"])
-    if not validation:
-        pulses = getValue(indicator_details, ["pulse_info", "pulses"])
-        if pulses:
-            for pulse in pulses:
-                if "name" in pulse:
-                    alerts.append("In pulse: " + pulse["name"])
+
+    if standard_mode:
+        # Return nothing if it's in the whitelist
+        validation = getValue(indicator_details, ["validation"])
+        if not validation:
+            pulses = getValue(indicator_details, ["pulse_info", "pulses"])
+            if pulses:
+                for pulse in pulses:
+                    if "name" in pulse:
+                        alerts.append("In pulse: " + pulse["name"])
+
+    else:
+        if indicator_type == "URL":
+            google = getValue(
+                indicator_details, ["url_list", "url_list", "result", "safebrowsing"]
+            )
+            if google and "response_code" in str(google):
+                alerts.append({"google_safebrowsing": "malicious"})
+
+            clamav = getValue(
+                indicator_details,
+                ["url_list", "url_list", "result", "multiav", "matches", "clamav"],
+            )
+            if clamav:
+                alerts.append({"clamav": clamav})
+
+            avast = getValue(
+                indicator_details,
+                ["url_list", "url_list", "result", "multiav", "matches", "avast"],
+            )
+            if avast:
+                alerts.append({"avast": avast})
+
+            pulses = getValue(indicator_details, ["general", "pulse_info", "pulses"])
+            if pulses:
+                for pulse in pulses:
+                    if "name" in pulse:
+                        alerts.append("In pulse: " + pulse["name"])
 
     return alerts
 
 
 def get_ip_alerts(ip):
-    print("~~~~~~~~~~~~~~", ip)
     import re
 
     if re.findall(
         "(^127\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^192\.168\.)",
         ip,
     ):
-        return {"PEPEPEPE"}
+        return 0, []
 
     alerts = []
-    indicator_details = otx.get_indicator_details_by_section(
-        IndicatorTypes.IPv4, ip, "general"
-    )
+    try:
+        indicator_details = otx.get_indicator_details_by_section(
+            IndicatorTypes.IPv4, ip, "general"
+        )
 
-    # Return nothing if it's in the whitelist
-    validation = getValue(indicator_details, ["validation"])
-    if not validation:
-        alerts = get_alerts(indicator_details)
-        if len(alerts) > 0:
-            return indicator_details
-            print("Identified as potentially malicious")
-            print(str(alerts))
+        # Return nothing if it's in the whitelist
+        validation = getValue(indicator_details, ["validation"])
+        if not validation:
+            alerts = get_alerts(indicator_details)
+            if len(alerts) > 0:
+                return 1, indicator_details
+            else:
+                return 2, []
         else:
-            return []
-            print("Unknown or not identified as malicious")
-    else:
-        return validation
+            return 3, validation
+    except:
+        return -1, []
 
 
 def get_host_alerts(host):
     alerts = []
+    try:
+        indicator_details1 = otx.get_indicator_details_by_section(
+            IndicatorTypes.HOSTNAME, host, "general"
+        )
+        indicator_details2 = otx.get_indicator_details_by_section(
+            IndicatorTypes.DOMAIN, host, "general"
+        )
 
-    print("@@@@@@@@@@@@@@@@", host[0])
+        validation1 = getValue(indicator_details1, ["validation"])
+        validation2 = getValue(indicator_details2, ["validation"])
 
-    indicator_details1 = otx.get_indicator_details_by_section(
-        IndicatorTypes.HOSTNAME, host[0], "general"
-    )
-    indicator_details2 = otx.get_indicator_details_by_section(
-        IndicatorTypes.DOMAIN, host[0], "general"
-    )
+        if not validation1 and not validation2:
+            alerts.append(get_alerts(indicator_details1))
+            alerts.append(get_alerts(indicator_details2))
+            indicator_details1["pulse_info"]["pulses"] = (
+                indicator_details1["pulse_info"]["pulses"]
+                + indicator_details2["pulse_info"]["pulses"]
+            )
+            if len(alerts) > 0:
+                return 1, indicator_details1
 
-    validation1 = getValue(indicator_details1, ["validation"])
-    validation2 = getValue(indicator_details2, ["validation"])
+            else:
+                return 2, []
 
-    if not validation1 and not validation2:
-        alerts.append(get_alerts(indicator_details1))
-        alerts.append(get_alerts(indicator_details2))
-        if len(alerts) > 0:
-            return alerts
-            print("Identified as potentially malicious")
-            print(str(alerts))
         else:
-            return []
-            print("Unknown or not identified as malicious")
+            return 3, validation1 + validation2
+    except:
+        return -1, []
+
+
+def get_url_alerts(url):
+    alerts = []
+
+    try:
+        indicator_details = otx.get_indicator_details_by_section(
+            IndicatorTypes.URL, url, "general"
+        )
+
+        validation = getValue(indicator_details, ["validation"])
+        if not validation:
+            # alerts = get_alerts(otx.get_indicator_details_full(IndicatorTypes.URL, url), False, 'URL')
+            alerts = get_alerts(indicator_details)
+            if len(alerts) > 0:
+                return 1, indicator_details
+            else:
+                return 2, []
+        else:
+            return 3, validation
+    except:
+        return -1, []
+
+
+def get_hash_alerts(hash):
+    if len(hash) == 64:
+        hash_type = IndicatorTypes.FILE_HASH_SHA256
+    elif len(hash) == 40:
+        hash_type = IndicatorTypes.FILE_HASH_SHA1
+    elif len(hash) == 32:
+        hash_type = IndicatorTypes.FILE_HASH_MD5
     else:
-        return validation1 + validation2
-        print("Validated by: ", validation1, validation2)
+        return -1, []
+
+    alerts = []
+    try:
+        indicator_details = otx.get_indicator_details_by_section(
+            hash_type, hash, "general"
+        )
+
+        # Return nothing if it's in the whitelist
+        validation = getValue(indicator_details, ["validation"])
+        if not validation:
+            alerts = get_alerts(indicator_details)
+            if len(alerts) > 0:
+                return 1, indicator_details
+            else:
+                return 2, []
+        else:
+            return 3, validation
+    except:
+        return -1, []
