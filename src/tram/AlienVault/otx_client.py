@@ -1,19 +1,39 @@
-import argparse
-import hashlib
-from warnings import catch_warnings
-
 from OTXv2 import IndicatorTypes, OTXv2
 
 ## pip install OTXv2
 
-# Your API key
-API_KEY = ""
+API_KEY = ""  # Your API key
 OTX_SERVER = "https://otx.alienvault.com/"
 
 otx = OTXv2(API_KEY, server=OTX_SERVER)
 
-# Get a nested key from a dict, without having to do loads of ifs
+
+def get_alerts(indicator_details):
+    """
+    From all the data collected from an IOC, it returns all the alerts that it has present.
+
+    :param indicator_details: information where to look for.
+    """
+    alerts = []
+
+    # Return nothing if it's in the whitelist
+    validation = getValue(indicator_details, ["validation"])
+    if not validation:
+        pulses = getValue(indicator_details, ["pulse_info", "pulses"])
+        if pulses:
+            for pulse in pulses:
+                if "name" in pulse:
+                    alerts.append("In pulse: " + pulse["name"])
+    return alerts
+
+
 def getValue(results, keys):
+    """
+    Method used to retrieve in a generic way the fields of an IOC by using an array of keys. Get a nested key from a dict, without having to do loads of ifs
+
+    :param results: information where to look for.
+    :param keys: to dind.
+    """
     if type(keys) is list and len(keys) > 0:
         if type(results) is dict:
             key = keys.pop(0)
@@ -28,21 +48,6 @@ def getValue(results, keys):
                 return results
     else:
         return results
-
-
-def get_alerts(indicator_details):
-    alerts = []
-
-    # Return nothing if it's in the whitelist
-    validation = getValue(indicator_details, ["validation"])
-    if not validation:
-        pulses = getValue(indicator_details, ["pulse_info", "pulses"])
-        if pulses:
-            for pulse in pulses:
-                if "name" in pulse:
-                    alerts.append("In pulse: " + pulse["name"])
-
-    return alerts
 
 
 def get_ip_alerts(ip):

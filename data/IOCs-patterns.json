@@ -42,11 +42,11 @@
             "values": "[\/]-(?:(?!\\.\\s+)[A-Za-z0-9-\/])+"
         },
         {
-            "name": "Windows directory",
+            "name": "Windows-directory",
             "values": "\\b([a-zA-Z]:\\\\((?:[a-zA-Z0-9() ]*\\\\)*).*)\\b"
         },
         {
-            "name": "Unix path",
+            "name": "Unix-path",
             "values": "^(?:\\\\|\\{|\\%|\\\/).+(?:\\\\|\/)"
         },
         {
