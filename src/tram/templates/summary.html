@@ -440,7 +440,7 @@
                                                     <td>{{IOC_value}}</td>
                                                     {% if IOC_type_name == "URL" or IOC_type_name == "IP" or IOC_type_name == "Host" or IOC_type_name == "MD5" or IOC_type_name == "SHA1" or IOC_type_name == "SHA256"%}
                                                         <td style="text-align: center;">
-                                                            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="getIndicatorInfo('{{IOC_value}}', '{{IOC_type_name}}')">+info</button>
+                                                            <button style="background-color: #6241C5;" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" onclick="getIndicatorInfo('{{IOC_value}}', '{{IOC_type_name}}')">+info</button>
                                                         </td>
                                                     {% endif %}
                                                 </tr>
