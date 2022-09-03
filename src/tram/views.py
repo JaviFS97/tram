@@ -368,7 +368,7 @@ def summary(request, pk):
                     )  # Gets the lemma of each word to avoid repetitions in dictionary
                     keywords_lemmas.add(keyword_lemma)
 
-                report_keywords[pattern_name] = keywords
+                report_keywords[pattern_name] = keywords_lemmas
 
             return report_keywords
 
@@ -468,10 +468,6 @@ def summary(request, pk):
                 IOCs = set(
                     re.findall(pattern_values, report.text)
                 )  # Applies regular expressions over the entire text
-
-                if pattern_name == "IP":  # [FOR TESTING] Delete
-                    IOCs.add("8.8.8.8")
-                    IOCs.add("142.112.11.31")
 
                 report_IOCs[pattern_name] = IOCs
 
